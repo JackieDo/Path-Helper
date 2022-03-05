@@ -1,0 +1,25 @@
+{
+    "name": "jackiedo/path-helper",
+    "description": "Helper class for working with local paths in PHP",
+    "keywords": ["php", "path", "paths", "helper", "helpers", "library"],
+    "license": "MIT",
+    "homepage": "https://github.com/JackieDo/path-helper",
+    "authors": [
+        {
+            "name": "Jackie Do",
+            "email": "anhvudo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "Jackiedo\\PathHelper\\": "src"
+        }
+    },
+    "minimum-stability": "stable"
+}
