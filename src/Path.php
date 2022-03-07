@@ -12,206 +12,20 @@ namespace Jackiedo\PathHelper;
 class Path
 {
     /**
-     * The original path.
+     * Return absolute path from a given path.
      *
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * The constructor.
+     * This method is an alternative to `realpath()` function for non-existent paths.
      *
-     * @param string $path
-     */
-    public function __construct($path = null)
-    {
-        $this->path = (string) $path;
-    }
-
-    /**
-     * Load the original path.
-     *
-     * @param string $path
-     *
-     * @return Path
-     */
-    public static function load($path)
-    {
-        return new static($path);
-    }
-
-    /**
-     * Return absolute path from the loaded path.
-     *
-     * This function is an alternative to realpath() function for non-existent paths.
-     *
-     * @param string $separator the directory separator wants to use in the results
+     * @param string $path      the path want to format
+     * @param string $separator the directory separator want to use in the result
      *
      * @return string
      */
-    public function absolute($separator = DIRECTORY_SEPARATOR)
-    {
-        return $this->makeAbsolutePath($this->path, $separator);
-    }
-
-    /**
-     * Return relative path from the loaded path to the specific path.
-     *
-     * @param string $path      the path of file or directory want to go to
-     * @param string $separator the directory separator wants to use in the results
-     *
-     * @return string
-     */
-    public function relativeTo($path, $separator = DIRECTORY_SEPARATOR)
-    {
-        $separator  = $separator ?: DIRECTORY_SEPARATOR;
-        $fromParts  = explode($separator, $this->makeAbsolutePath($this->path, $separator));
-        $toParts    = explode($separator, $this->makeAbsolutePath($path, $separator));
-        $diffFromTo = array_diff_assoc($fromParts, $toParts);
-        $diffToFrom = array_diff_assoc($toParts, $fromParts);
-
-        if ($diffToFrom === $toParts) {
-            return implode($separator, $toParts);
-        }
-
-        return str_repeat('..' . $separator, count($diffFromTo)) . implode($separator, $diffToFrom);
-    }
-
-    /**
-     * Return relative path from the specific path to the loaded path.
-     *
-     * @param string $path      the departure file or directory location
-     * @param string $separator the directory separator wants to use in the results
-     *
-     * @return string
-     */
-    public function relativeFrom($path, $separator = DIRECTORY_SEPARATOR)
-    {
-        $separator  = $separator ?: DIRECTORY_SEPARATOR;
-        $fromParts  = explode($separator, $this->makeAbsolutePath($path, $separator));
-        $toParts    = explode($separator, $this->makeAbsolutePath($this->path, $separator));
-        $diffFromTo = array_diff_assoc($fromParts, $toParts);
-        $diffToFrom = array_diff_assoc($toParts, $fromParts);
-
-        if ($diffToFrom === $toParts) {
-            return implode($separator, $toParts);
-        }
-
-        return str_repeat('..' . $separator, count($diffFromTo)) . implode($separator, $diffToFrom);
-    }
-
-    /**
-     * Check if the loaded path is an absolute path.
-     *
-     * @return bool
-     */
-    public function isAbsolute()
-    {
-        return !$this->isRelative();
-    }
-
-    /**
-     * Check if the loaded path is a relative path.
-     *
-     * @return bool
-     */
-    public function isRelative()
-    {
-        $path       = $this->normalizePath($this->path, DIRECTORY_SEPARATOR);
-        $splitParts = explode(DIRECTORY_SEPARATOR, $path);
-
-        if (in_array('.', $splitParts) || in_array('..', $splitParts)) {
-            return true;
-        }
-
-        return '' !== $splitParts[0] && 0 === preg_match('/^[a-z]:$/i', $splitParts[0]);
-    }
-
-    /**
-     * Check if the loaded path is descendant of the specific path.
-     *
-     * @param string $path the ancestor
-     *
-     * @return bool
-     */
-    public function isDescendantOf($path)
-    {
-        $ancestor   = $this->makeAbsolutePath($path);
-        $descendant = $this->makeAbsolutePath($this->path);
-
-        return substr($descendant, 0, strlen($ancestor)) === $ancestor;
-    }
-
-    /**
-     * Check if the loaded path is ancestor of the specific path.
-     *
-     * @param string $path the ancestor
-     *
-     * @return bool
-     */
-    public function isAncestorOf($path)
-    {
-        $ancestor   = $this->makeAbsolutePath($this->path);
-        $descendant = $this->makeAbsolutePath($path);
-
-        return substr($descendant, 0, strlen($ancestor)) === $ancestor;
-    }
-
-    /**
-     * Convert the loaded path to Windows style.
-     *
-     * @return string
-     */
-    public function winStyle()
-    {
-        return str_replace('/', '\\', $this->path);
-    }
-
-    /**
-     * Convert the loaded path to Unix style.
-     *
-     * @return string
-     */
-    public function unixStyle()
-    {
-        return str_replace('\\', '/', $this->path);
-    }
-
-    /**
-     * Normalize the loaded path separators according to the current OS style.
-     *
-     * @return string
-     */
-    public function osStyle()
-    {
-        return $this->normalizePath($this->path, DIRECTORY_SEPARATOR);
-    }
-
-    /**
-     * Formats the directory separators of the loaded path with a specific string.
-     *
-     * @param string $separator the directory separator want to use
-     *
-     * @return string
-     */
-    public function normalize($separator = DIRECTORY_SEPARATOR)
-    {
-        return $this->normalizePath($this->path, $separator);
-    }
-
-    /**
-     * Make the absolute path from the specific path.
-     *
-     * @param string $path      the input path
-     * @param string $separator the directory separator want to use
-     *
-     * @return string
-     */
-    protected function makeAbsolutePath($path, $separator = DIRECTORY_SEPARATOR)
+    public static function absolute($path, $separator = DIRECTORY_SEPARATOR)
     {
         // Normalize directory separators
         $separator = $separator ?: DIRECTORY_SEPARATOR;
-        $path      = $this->normalizePath($path, $separator);
+        $path      = static::normalize($path, $separator);
 
         // Store root part of path
         $root = null;
@@ -235,7 +49,7 @@ class Path
                 break;
             }
 
-            $path = $this->normalizePath(getcwd(), $separator) . $separator . $path;
+            $path = static::normalize(getcwd(), $separator) . $separator . $path;
         }
 
         // Get and filter empty sub paths
@@ -260,14 +74,141 @@ class Path
     }
 
     /**
-     * Formats the directory separators of the path with a specific string.
+     * Return relative path from a given file or directory to another location.
      *
-     * @param string $path      the input path
+     * @param string $from      the path of departure file or directory
+     * @param string $to        the path of destination file or directory
+     * @param string $separator the directory separator want to use in the result
+     *
+     * @return string
+     */
+    public static function relative($from, $to, $separator = DIRECTORY_SEPARATOR)
+    {
+        $separator  = $separator ?: DIRECTORY_SEPARATOR;
+        $fromParts  = explode($separator, static::absolute($from, $separator));
+        $toParts    = explode($separator, static::absolute($to, $separator));
+        $diffFromTo = array_diff_assoc($fromParts, $toParts);
+        $diffToFrom = array_diff_assoc($toParts, $fromParts);
+
+        if ($diffToFrom === $toParts) {
+            return implode($separator, $toParts);
+        }
+
+        return str_repeat('..' . $separator, count($diffFromTo)) . implode($separator, $diffToFrom);
+    }
+
+    /**
+     * Check if a given path is an absolute path.
+     *
+     * @param string $path the path want to check
+     *
+     * @return bool
+     */
+    public static function isAbsolute($path)
+    {
+        return !static::isRelative($path);
+    }
+
+    /**
+     * Check if a given path is a relative path.
+     *
+     * @param string $path the path want to check
+     *
+     * @return bool
+     */
+    public static function isRelative($path)
+    {
+        $path       = static::normalize($path, DIRECTORY_SEPARATOR);
+        $splitParts = explode(DIRECTORY_SEPARATOR, $path);
+
+        if (in_array('.', $splitParts) || in_array('..', $splitParts)) {
+            return true;
+        }
+
+        return '' !== $splitParts[0] && 0 === preg_match('/^[a-z]:$/i', $splitParts[0]);
+    }
+
+    /**
+     * Check if a given path is descendant of the another path.
+     *
+     * Return true if the input path is descendant of the comparison
+     *
+     * @param string $path       the path want to check
+     * @param string $comparison the target path used for comparison
+     *
+     * @return bool
+     */
+    public static function isDescendant($path, $comparison)
+    {
+        $ancestor   = static::absolute($comparison);
+        $descendant = static::absolute($path);
+
+        return substr($descendant, 0, strlen($ancestor)) === $ancestor;
+    }
+
+    /**
+     * Check if a given path is ancestor of the another path.
+     *
+     * Return true if the input path is ancestor of the comparison
+     *
+     * @param string $path       the path want to check
+     * @param string $comparison the target path used for comparison
+     *
+     * @return bool
+     */
+    public static function isAncestor($path, $comparison)
+    {
+        $ancestor   = static::absolute($path);
+        $descendant = static::absolute($comparison);
+
+        return substr($descendant, 0, strlen($ancestor)) === $ancestor;
+    }
+
+    /**
+     * Normalize directory separators of a given path according to Windows OS style.
+     *
+     * @param string $path the path want to normalize
+     *
+     * @return string
+     */
+    public static function winStyle($path)
+    {
+        return str_replace('/', '\\', (string) $path);
+    }
+
+    /**
+     * Normalize directory separators of a given path according to Unix OS style.
+     *
+     * @param string $path the path want to normalize
+     *
+     * @return string
+     */
+    public static function unixStyle($path)
+    {
+        return str_replace('\\', '/', (string) $path);
+    }
+
+    /**
+     * Normalize directory separators of a given path according to the current OS style.
+     *
+     * @param string $path the path want to normalize
+     *
+     * @return string
+     */
+    public static function osStyle($path)
+    {
+        return static::normalize($path, DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * Formats the directory separators of a given path with a specific string.
+     *
+     * @param string $path      the path want to normalize
      * @param string $separator the directory separator want to use
      *
      * @return string
      */
-    protected function normalizePath($path, $separator = DIRECTORY_SEPARATOR)
+    public static function normalize($path, $separator = DIRECTORY_SEPARATOR)
     {
         return str_replace(['/', '\\'], (string) $separator, (string) $path);
     }
