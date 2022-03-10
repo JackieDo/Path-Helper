@@ -97,15 +97,15 @@ public static function normalize($path, $separator = DIRECTORY_SEPARATOR);
 
 ```php
 $return1 = Path::normalize('path\\to/specific/file/or\\directory');
-// The results returned will depend on the operating system
+// The result returned will depend on the operating system
 //     On Windows -> path\to\specific\file\or\directory
 //     On Unix    -> path/to/specific/file/or/directory
 
 $return2 = Path::normalize('path\\to/specific/file/or\\directory', '/');
-// The results alway is: path/to/specific/file/or/directory
+// path/to/specific/file/or/directory
 
 $return3 = Path::normalize('path\\to/specific/file/or\\directory', ' > ');
-// The results alway is: path > to > specific > file > or > directory
+// path > to > specific > file > or > directory
 ```
 
 ### Restyle the path
@@ -130,7 +130,7 @@ public static function unixStyle($path);
 
 ```php
 $return = Path::unixStyle('path\\to/specific/file/or\\directory');
-// The results alway is: path/to/specific/file/or/directory
+// path/to/specific/file/or/directory
 ```
 
 #### Restyle to Windows style
@@ -153,7 +153,7 @@ public static function winStyle($path);
 
 ```php
 $return = Path::winStyle('path\\to/specific/file/or\\directory');
-// The results alway is: path\to\specific\file\or\directory
+// path\to\specific\file\or\directory
 ```
 
 #### Restyle belong to current OS
@@ -176,7 +176,7 @@ public static function osStyle($path);
 
 ```php
 $return = Path::osStyle('path\\to/specific/file/or\\directory');
-// The results returned will depend on the operating system
+// The result returned will depend on the operating system
 //     On Windows -> path\to\specific\file\or\directory
 //     On Unix    -> path/to/specific/file/or/directory
 ```
@@ -204,7 +204,7 @@ public static function absolute($path, $separator = DIRECTORY_SEPARATOR);
 
 ```php
 $return = Path::absolute('./this\\is/../sample/path');
-// The results returned will depend on the operating system and current working directory
+// The result returned will depend on the operating system and current working directory
 // You will probably get the following result: /home/www/public_html/this/sample/path
 ```
 
@@ -236,7 +236,7 @@ public static function relative($from, $to, $separator = DIRECTORY_SEPARATOR);
 
 ```php
 $return = Path::absolute('./this\\is/../sample/path', '/home/www/another/directory');
-// The results returned will depend on the operating system and current working directory
+// The result returned will depend on the operating system and current working directory
 // You will probably get the following result: ../../../../another/directory
 ```
 
