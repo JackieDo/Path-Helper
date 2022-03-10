@@ -21,7 +21,7 @@ Look at one of the following topics to learn more about Path Helper
     - [Using static method](#using-static-method)
     - [Using method of instance](#using-method-of-instance)
     - [Using built-in function](#using-built-in-function)
-  - [Availble methods](#availble-methods)
+  - [Available methods](#available-methods)
     - [Normalize the directory separators of the path](#normalize-the-directory-separators-of-the-path)
     - [Restyle the path](#restyle-the-path)
       - [Restyle to Unix style](#restyle-to-unix-style)
@@ -74,7 +74,7 @@ $return = $helper->doSomething();
 
 See [here](#available-functions) for more details.
 
-## Availble methods
+## Available methods
 
 ### Normalize the directory separators of the path
 Formats the directory separators of a given path with a specific string.
