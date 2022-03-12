@@ -4,10 +4,7 @@ use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
 $finder = Finder::create()
-    ->in([
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ])
+    ->in(__DIR__ . '/src')
     ->name('*.php')
     ->notName('*.blade.php')
     ->ignoreDotFiles(true)
