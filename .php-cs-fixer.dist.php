@@ -4,7 +4,10 @@ use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
 $finder = Finder::create()
-    ->in(__DIR__ . '/src')
+    ->in([
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
+    ])
     ->name('*.php')
     ->notName('*.blade.php')
     ->ignoreDotFiles(true)
@@ -48,6 +51,9 @@ $rules = [
     'no_superfluous_phpdoc_tags' => false,
     'multiline_whitespace_before_semicolons' => [
         'strategy' => 'no_multi_line',
+    ],
+    'php_unit_method_casing' => [
+        'case' => 'snake_case'
     ],
     'phpdoc_add_missing_param_annotation' => [
         'only_untyped' => false
